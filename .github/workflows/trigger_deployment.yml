@@ -1,115 +1,115 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
+# # This workflow uses actions that are not certified by GitHub.
+# # They are provided by a third-party and are governed by
+# # separate terms of service, privacy policy, and support
+# # documentation.
 
-# GitHub recommends pinning actions to a commit SHA.
-# To get a newer version, you will need to update the SHA.
-# You can also reference a tag or branch, but the action may change without warning.
-
-
-name: Deploy to Amazon ECS
-on:
-  push:
-    branches:
-      - main
-
-env:
-  BRANCH_FOR_PRODUCTION_DEPLOYMENT: main
-  DEPLOYMENT_ENVIRONMENT: production      # this will get changed to production if the branch is main
-  AWS_REGION: ap-south-1                   # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: production-backend           # set this to your Amazon ECR repository name
-  ECS_SERVICE: diagnostics_be                 # set this to your Amazon ECS service name
-  ECS_CLUSTER_SUFFIX: _backend                # set this to your Amazon ECS cluster name
-  TASK_DEFINITION_NAME: diagnosticsMaster-be
-  # ECS_TASK_DEFINITION: ./.github/workflows/task_definition_server.json # set this to the path to your Amazon ECS task definition
-  # file, e.g. .aws/task-definition.json
-  CONTAINER_NAME: diagnostics-be        # set this to the name of the container in the containerDefinitions section of your task definition
-  SERVICE_CONFIG: ./service_config.json
-  # SQLALCHEMY_URL: postgresql://postgres:2FhkYwR7KZAQugNgU1Nu@diagnostics-master-db.cpqagswko3sk.ap-south-1.rds.amazonaws.com:5432/postgres
-  # AWS_ACCESS_KEY_ID: AKIATCKAOPS5YK6E5OKX
-  # AWS_SECRET_ACCESS_KEY: 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
+# # GitHub recommends pinning actions to a commit SHA.
+# # To get a newer version, you will need to update the SHA.
+# # You can also reference a tag or branch, but the action may change without warning.
 
 
-jobs:
-  is_deployment_enabled:
-    name: Check Deployment Conditions
-    runs-on: ubuntu-latest
-    outputs:
-      status: ${{ steps.enable_deployment.outcome }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+# name: Deploy to Amazon ECS
+# on:
+#   push:
+#     branches:
+#       - main
 
-      - name: Check if deployment is enabled
-        id: enable_deployment
-        continue-on-error: true
-        run: |
-          export is_deploy=`cat ${{ env.SERVICE_CONFIG  }}  | jq .enable_deployment`
-          echo IS_DEPLOY:: ${is_deploy}
-          if [ "${is_deploy}" == "true" ]; then echo "Deployment is enabled"; exit 0; else echo "Deployment is not enabled"; exit 1; fi
+# env:
+#   BRANCH_FOR_PRODUCTION_DEPLOYMENT: main
+#   DEPLOYMENT_ENVIRONMENT: production      # this will get changed to production if the branch is main
+#   AWS_REGION: ap-south-1                   # set this to your preferred AWS region, e.g. us-west-1
+#   ECR_REPOSITORY: production-backend           # set this to your Amazon ECR repository name
+#   ECS_SERVICE: diagnostics_be                 # set this to your Amazon ECS service name
+#   ECS_CLUSTER_SUFFIX: _backend                # set this to your Amazon ECS cluster name
+#   TASK_DEFINITION_NAME: diagnosticsMaster-be
+#   # ECS_TASK_DEFINITION: ./.github/workflows/task_definition_server.json # set this to the path to your Amazon ECS task definition
+#   # file, e.g. .aws/task-definition.json
+#   CONTAINER_NAME: diagnostics-be        # set this to the name of the container in the containerDefinitions section of your task definition
+#   SERVICE_CONFIG: ./service_config.json
+#   # SQLALCHEMY_URL: postgresql://postgres:2FhkYwR7KZAQugNgU1Nu@diagnostics-master-db.cpqagswko3sk.ap-south-1.rds.amazonaws.com:5432/postgres
+#   # AWS_ACCESS_KEY_ID: AKIATCKAOPS5YK6E5OKX
+#   # AWS_SECRET_ACCESS_KEY: 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
 
-  deploy:
-    needs: is_deployment_enabled
-    if: needs.is_deployment_enabled.outputs.status == 'success'
-    name: Deploy
-    # runs-on: self-hosted
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Change environment if the branch is main
-        shell: bash
-        run: |
-          export CURRENT_BRANCH=$(echo ${GITHUB_REF#refs/heads/})
-          echo "Currently on (branch): ${CURRENT_BRANCH}"
-          if [ "${CURRENT_BRANCH}" == "${{ env.BRANCH_FOR_PRODUCTION_DEPLOYMENT }}" ]; then echo "Changing environment to production"; echo "DEPLOYMENT_ENVIRONMENT=production" >> $GITHUB_ENV; fi
 
-      - name: Checkout
-        uses: actions/checkout@v3
+# jobs:
+#   is_deployment_enabled:
+#     name: Check Deployment Conditions
+#     runs-on: ubuntu-latest
+#     outputs:
+#       status: ${{ steps.enable_deployment.outcome }}
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+#       - name: Check if deployment is enabled
+#         id: enable_deployment
+#         continue-on-error: true
+#         run: |
+#           export is_deploy=`cat ${{ env.SERVICE_CONFIG  }}  | jq .enable_deployment`
+#           echo IS_DEPLOY:: ${is_deploy}
+#           if [ "${is_deploy}" == "true" ]; then echo "Deployment is enabled"; exit 0; else echo "Deployment is not enabled"; exit 1; fi
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+#   deploy:
+#     needs: is_deployment_enabled
+#     if: needs.is_deployment_enabled.outputs.status == 'success'
+#     name: Deploy
+#     # runs-on: self-hosted
+#     runs-on: ubuntu-22.04
+#     steps:
+#       - name: Change environment if the branch is main
+#         shell: bash
+#         run: |
+#           export CURRENT_BRANCH=$(echo ${GITHUB_REF#refs/heads/})
+#           echo "Currently on (branch): ${CURRENT_BRANCH}"
+#           if [ "${CURRENT_BRANCH}" == "${{ env.BRANCH_FOR_PRODUCTION_DEPLOYMENT }}" ]; then echo "Changing environment to production"; echo "DEPLOYMENT_ENVIRONMENT=production" >> $GITHUB_ENV; fi
 
-      - name: Build, tag, and push image to Amazon ECR
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-          NODE_ENVIRONMENT: development
-          DB_STRING: ${{ env.SQLALCHEMY_URL }}
-        run: |
-          # Build a docker container and
-          # push it to ECR so that it can
-          # be deployed to ECS.
-          echo "Using environment: ${NODE_ENVIRONMENT}..."
-          docker build --build-arg "DB_STRING=${DB_STRING}" -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+#       - name: Checkout
+#         uses: actions/checkout@v3
 
-      - name: Download task definition
-        run: |
-          echo "Using Environment: ${DEPLOYMENT_ENVIRONMENT}, and ecs cluster: ${DEPLOYMENT_ENVIRONMENT}${{ env.ECS_CLUSTER_SUFFIX }}"
-          aws ecs describe-task-definition --task-definition ${TASK_DEFINITION_NAME} --query taskDefinition > task-definition.json
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: task-definition.json
-          container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ steps.build-image.outputs.image }}
+#       - name: Login to Amazon ECR
+#         id: login-ecr
+#         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ env.ECS_SERVICE }}
-          cluster: ${{ env.DEPLOYMENT_ENVIRONMENT }}${{ env.ECS_CLUSTER_SUFFIX }}
-          wait-for-service-stability: true
+#       - name: Build, tag, and push image to Amazon ECR
+#         id: build-image
+#         env:
+#           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#           IMAGE_TAG: ${{ github.sha }}
+#           NODE_ENVIRONMENT: development
+#           DB_STRING: ${{ env.SQLALCHEMY_URL }}
+#         run: |
+#           # Build a docker container and
+#           # push it to ECR so that it can
+#           # be deployed to ECS.
+#           echo "Using environment: ${NODE_ENVIRONMENT}..."
+#           docker build --build-arg "DB_STRING=${DB_STRING}" -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+#           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+#           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+#       - name: Download task definition
+#         run: |
+#           echo "Using Environment: ${DEPLOYMENT_ENVIRONMENT}, and ecs cluster: ${DEPLOYMENT_ENVIRONMENT}${{ env.ECS_CLUSTER_SUFFIX }}"
+#           aws ecs describe-task-definition --task-definition ${TASK_DEFINITION_NAME} --query taskDefinition > task-definition.json
+
+#       - name: Fill in the new image ID in the Amazon ECS task definition
+#         id: task-def
+#         uses: aws-actions/amazon-ecs-render-task-definition@v1
+#         with:
+#           task-definition: task-definition.json
+#           container-name: ${{ env.CONTAINER_NAME }}
+#           image: ${{ steps.build-image.outputs.image }}
+
+#       - name: Deploy Amazon ECS task definition
+#         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+#         with:
+#           task-definition: ${{ steps.task-def.outputs.task-definition }}
+#           service: ${{ env.ECS_SERVICE }}
+#           cluster: ${{ env.DEPLOYMENT_ENVIRONMENT }}${{ env.ECS_CLUSTER_SUFFIX }}
+#           wait-for-service-stability: true
