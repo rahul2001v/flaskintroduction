@@ -16,15 +16,15 @@ on:
 
 env:
   BRANCH_FOR_PRODUCTION_DEPLOYMENT: main
-  DEPLOYMENT_ENVIRONMENT: flaskdev      # this will get changed to production if the branch is main
+  DEPLOYMENT_ENVIRONMENT: production      # this will get changed to production if the branch is main
   AWS_REGION: ap-south-1                   # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: flaskdev-repo           # set this to your Amazon ECR repository name
-  ECS_SERVICE: flaskdevrepo-service                # set this to your Amazon ECS service name
+  ECR_REPOSITORY: production-backend           # set this to your Amazon ECR repository name
+  ECS_SERVICE: flask_be                # set this to your Amazon ECS service name
   ECS_CLUSTER_SUFFIX: _backend                # set this to your Amazon ECS cluster name
-  TASK_DEFINITION_NAME: flaskdev_task
+  TASK_DEFINITION_NAME: flaskMaster-be
   # ECS_TASK_DEFINITION: ./.github/workflows/task_definition_server.json # set this to the path to your Amazon ECS task definition
   # file, e.g. .aws/task-definition.json
-  CONTAINER_NAME: flaskdev-repo        # set this to the name of the container in the containerDefinitions section of your task definition
+  CONTAINER_NAME: flask-be        # set this to the name of the container in the containerDefinitions section of your task definition
   SERVICE_CONFIG: ./service_config.json
   SQLALCHEMY_URL: ${{ secrets.SQLALCHEMY_URL }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
