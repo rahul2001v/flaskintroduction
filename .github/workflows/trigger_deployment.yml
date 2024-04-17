@@ -18,17 +18,17 @@ env:
   BRANCH_FOR_PRODUCTION_DEPLOYMENT: main
   DEPLOYMENT_ENVIRONMENT: production      # this will get changed to production if the branch is main
   AWS_REGION: ap-south-1                   # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: production-backend           # set this to your Amazon ECR repository name
-  ECS_SERVICE: diagnostics_be                 # set this to your Amazon ECS service name
-  ECS_CLUSTER_SUFFIX: _backend                # set this to your Amazon ECS cluster name
-  TASK_DEFINITION_NAME: diagnosticsMaster-be
+  ECR_REPOSITORY: flaskdev-server           # set this to your Amazon ECR repository name
+  ECS_SERVICE: flaskdev-service                 # set this to your Amazon ECS service name
+  ECS_CLUSTER_SUFFIX: flaskdev-cluster                # set this to your Amazon ECS cluster name
+  TASK_DEFINITION_NAME: flaskdev-task
   # ECS_TASK_DEFINITION: ./.github/workflows/task_definition_server.json # set this to the path to your Amazon ECS task definition
   # file, e.g. .aws/task-definition.json
-  CONTAINER_NAME: diagnostics-be        # set this to the name of the container in the containerDefinitions section of your task definition
+  CONTAINER_NAME: flaskdev-container        # set this to the name of the container in the containerDefinitions section of your task definition
   SERVICE_CONFIG: ./service_config.json
-  SQLALCHEMY_URL: postgresql://postgres:2FhkYwR7KZAQugNgU1Nu@diagnostics-master-db.cpqagswko3sk.ap-south-1.rds.amazonaws.com:5432/postgres
-  AWS_ACCESS_KEY_ID: AKIATCKAOPS5YK6E5OKX
-  AWS_SECRET_ACCESS_KEY: 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
+  SQLALCHEMY_URL: ${{ secrets.SQLALCHEMY_URL }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 
 jobs:
