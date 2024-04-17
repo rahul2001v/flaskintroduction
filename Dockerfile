@@ -1,10 +1,10 @@
 FROM python:3.9
-ARG DB_STRING
+# ARG DB_STRING
 
 WORKDIR /app
 
 COPY requirements.txt .
-ENV SQLALCHEMY_URL=${DB_STRING}
+# ENV SQLALCHEMY_URL=${DB_STRING}
 
 RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
