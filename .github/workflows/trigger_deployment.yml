@@ -16,7 +16,7 @@ on:
 
 env:
   BRANCH_FOR_PRODUCTION_DEPLOYMENT: main
-  DEPLOYMENT_ENVIRONMENT: production      # this will get changed to production if the branch is main
+  DEPLOYMENT_ENVIRONMENT: flaskdev      # this will get changed to production if the branch is main
   AWS_REGION: ap-south-1                   # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: flaskdev-repo           # set this to your Amazon ECR repository name
   ECS_SERVICE: flaskdevrepo-service                # set this to your Amazon ECS service name
